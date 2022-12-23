@@ -3,8 +3,40 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <signal.h>
+#include "./../include/log_handle.h"
+#define LEN 10
+#define my_log "./logs/master_log.txt"
 
-// DA AGGIUNGERE GESTIONE ERRORI
+void sig_handler(int signo){
+
+   if(signo == SIGINT){ // termination signal for the master
+
+            // Getting the pid of child processes
+            char line1[LEN], line2[LEN];
+            // pid1 for processA, pid2 for processB
+            long pid1 = 0, pid2 = 0;
+            // pointers to the processes
+            FILE *cmd1, *cmd2;
+            cmd1 = popen("pidof -s processA", "r");
+            cmd2 = popen("pidof -s processB", "r");
+            // retrieve the pid numbers
+            fgets(line1, LEN, cmd1);
+            fgets(line2, LEN, cmd2);
+
+            pid1 = strtoul(line1, NULL, 10);
+            pid2 = strtoul(line2, NULL, 10);
+
+            // Send signal to processA
+            kill(pid1, SIGTERM);
+            file_logG(my_log,"sent SIGTERM to processA");
+            // Send signal to processB
+            kill(pid2, SIGTERM);
+            file_logG(my_log,"sent SIGTERM to processB");
+
+            file_logS(my_log,signo);
+        } 
+}
 
 
 int spawn(const char * program, char * arg_list[]) {
@@ -28,6 +60,9 @@ int spawn(const char * program, char * arg_list[]) {
 }
 
 int main() {
+
+  // setup to receive SIGINT
+  signal(SIGINT, sig_handler);
 
   char * arg_list_A[] = { "/usr/bin/konsole", "-e", "./bin/processA", NULL };
   char * arg_list_B[] = { "/usr/bin/konsole", "-e", "./bin/processB", NULL };

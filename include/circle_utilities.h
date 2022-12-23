@@ -1,5 +1,4 @@
 #include <bmpfile.h>
-// #include "./../include/log_handle.h"
 #define radius 30
 
 // Typedef for circle center
@@ -45,6 +44,7 @@ void circle_drawAOS(bmpfile_t *bmp, rgb_pixel_t *ptr){
     for(int i = 0; i < height; i++){
       for(int j = 0; j < width; j++){
 
+        // take pixel from the bitmap to write it in the shared memory
         p = bmp_get_pixel(bmp,j,i);
 
         
@@ -93,42 +93,30 @@ coordinate find_center(bmpfile_t *bmp, rgb_pixel_t *ptr){
   
         int first = 0, last = 0;
 
-        //char msg[100];
-
         coordinate center;
-
-        //sprintf(msg," beginning of the function");
-         //file_logG("./logs/prova.txt", msg);
 
          for(int i = 0; i < height; i++){
           for(int j = 0; j < width; j++){
-             if(ptr[j+width*i].green == pixel.green && first == 0){
+             if(ptr[j+width*i].green == pixel.green && first == 0){ // first blue pixel found
               first = j-1;
-           //   sprintf(msg,"first %d", first);
-             // file_logG("./logs/prova.txt", msg);
              }
-             if(ptr[j+width*i].green != pixel.green && first != 0){
+             if(ptr[j+width*i].green != pixel.green && first != 0){ // last blue pixel found
               last = j;
-              //sprintf(msg,"last %d", last);
-              //file_logG("./logs/prova.txt", msg);
               break;
              }
       }
 
+      // check distance between blue pixel and if it is equal to the radius, the center has been found
       if(last - first == 2*radius){
                 center.x = first+radius; // cx
                 center.y = i; // cy
-
-                //sprintf(msg,"first %d last %d", first, last);
-                //sprintf(msg,"cx %d cy %d", center.x,center.y);
-                //file_logG("./logs/prova.txt", msg);
-
                 break;
             }
       first = 0;
       last = 0;
     }
 
+    // once the new center has been retrieved, draw circle in the bitmap of process B
     circle_draw(center.x,center.y,bmp);
 
     return center;

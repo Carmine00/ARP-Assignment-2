@@ -5,7 +5,6 @@
 #include <time.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-
 // library created to write on the log file of the processes
 
 
@@ -81,25 +80,4 @@ void file_logG(char *my_log, char *msg){ // function to write on the log file to
       fprintf(fp,"%s, %s\n", msg, dt);
       fclose(fp);
   }
-}
-
-int logTime(char *path){
-  
-  struct stat filestat;
-  char val[10];
-  int min;
-
-  /* 
-  the stat() function gets status information about a specified file and saves
-  the information, in seconds since the Epoch in the struct stat variable; 
-  the most recent status of change of the file is then obtained with the function 
-  localtime that returns the time broken-down in parts (day, hour, minute ecc...)
-   */
-  if(stat(path, &filestat) != -1){
-     strftime(val,sizeof(val),"%M",localtime(&filestat.st_ctim));
-     sscanf(val,"%d",&min);
-     return min;
-  }else
-    return -1;
-
 }
