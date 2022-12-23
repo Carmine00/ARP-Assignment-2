@@ -3,9 +3,11 @@
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <semaphore.h>
 #include "./../include/processB_utilities.h"
 #include "./../include/circle_utilities.h"
-#define NAME "out/prova"
+#define SEM_PATH_WRITER "/sem_AOS_writer"
+#define SEM_PATH_READER "/sem_AOS_reader"
 
 int main(int argc, char const *argv[])
 {
@@ -14,6 +16,9 @@ int main(int argc, char const *argv[])
     const int SIZE = width*height*sizeof(rgb_pixel_t);
     int shm_fd;
     rgb_pixel_t * ptr;
+    sem_t *sem_id_writer;
+    sem_t *sem_id_reader;
+
     shm_fd = shm_open(shm_name, O_RDONLY, 0666);
     if (shm_fd == 1) {
         printf("Shared memory segment failed\n");
@@ -33,18 +38,14 @@ int main(int argc, char const *argv[])
     // Utility variable to avoid trigger resize event on launch
     int first_resize = TRUE;
 
+    // normalized center for the ncurse window
+    int cx, cy, counter = 0, dim = 10;
+
     // array for the center
     coordinate *center = NULL;
 
-    center = (coordinate*) malloc(10 * sizeof (coordinate));
+    center = (coordinate*) malloc(dim * sizeof (coordinate));
 
-    center[0].x = width/2;
-    center[0].y = height/2;
-
-    
-
-    // normalized center for the ncurse window
-    int cx, cy;
 
     // Initialize UI
     init_console_ui();
@@ -54,10 +55,19 @@ int main(int argc, char const *argv[])
     
     bmp = bmp_create(width, height, depth);
 
-    circle_draw(800, 300,bmp);
+    //circle_draw(center[0].x, center[0].y,bmp);
 
-    bmp_save(bmp, "out/SNOP.bmp");
+    sem_id_writer = sem_open(SEM_PATH_WRITER, 0);
+    if(sem_id_writer== (void*)-1){
+        perror("sem_open failure");
+        exit(1);
+    }
 
+    sem_id_reader = sem_open(SEM_PATH_READER, 0);
+    if(sem_id_reader== (void*)-1){
+        perror("sem_open failure");
+        exit(1);
+    }
     
     // Infinite loop
     while (TRUE) {
@@ -75,14 +85,20 @@ int main(int argc, char const *argv[])
             }
         }
         else {
-            delete(center[0].x, center[0].y,bmp);
-            center[0] = find_center(bmp, ptr);
-            bmp_save(bmp, "out/SNOP.bmp");
-            cx = center[0].x/20;
-            cy = center[0].y/20;
-            mvaddch(center[0].y, center[0].x, '0');
+            sem_wait(sem_id_reader);
+            center[counter] = find_center(bmp, ptr);
+            sem_post(sem_id_writer);
+            //circle_draw(center[0].x, center[0].y,bmp);
+            cx = center[counter].x/20;
+            cy = center[counter].y/20;
+            mvaddch(cy, cx, '0');
+            delete(center[counter].x, center[counter].y,bmp);
+            if(counter == dim){
+                dim = 2*dim;
+                center = (coordinate*) realloc(center, dim* sizeof (coordinate));
+            }
+            counter++;
             refresh();
-            sleep(10);
         }
     }
 

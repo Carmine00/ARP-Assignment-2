@@ -1,5 +1,5 @@
 #include <bmpfile.h>
-#include "./../include/log_handle.h"
+// #include "./../include/log_handle.h"
 #define radius 30
 
 // Typedef for circle center
@@ -40,17 +40,18 @@ void circle_draw(int cx, int cy, bmpfile_t *bmp){
 void circle_drawAOS(bmpfile_t *bmp, rgb_pixel_t *ptr){
 
     rgb_pixel_t* p;
-    
+
+      char msg[100];
     for(int i = 0; i < height; i++){
       for(int j = 0; j < width; j++){
 
         p = bmp_get_pixel(bmp,j,i);
 
         
-        ptr[i+j*height].alpha = p->alpha;
-        ptr[i+j*height].blue = p->blue;
-        ptr[i+j*height].green = p->green;
-        ptr[i+j*height].red = p->red;
+        ptr[j+width*i].alpha = p->alpha;
+        ptr[j+width*i].blue = p->blue;
+        ptr[j+width*i].green = p->green;
+        ptr[j+width*i].red = p->red;
 
       }
     }
@@ -79,10 +80,10 @@ void deleteAOS(rgb_pixel_t *ptr){
     
     for(int i = 0; i < height; i++){
       for(int j = 0; j < width; j++){
-        ptr[i+j*height].alpha = pixel_w.alpha;
-        ptr[i+j*height].blue = pixel_w.blue;
-        ptr[i+j*height].green = pixel_w.green;
-        ptr[i+j*height].red = pixel_w.red;
+        ptr[j+width*i].alpha = pixel_w.alpha;
+        ptr[j+width*i].blue = pixel_w.blue;
+        ptr[j+width*i].green = pixel_w.green;
+        ptr[j+width*i].red = pixel_w.red;
       }
     }
 }
@@ -92,37 +93,41 @@ coordinate find_center(bmpfile_t *bmp, rgb_pixel_t *ptr){
   
         int first = 0, last = 0;
 
-        char msg[100];
+        //char msg[100];
 
         coordinate center;
 
-        sprintf(msg," AHAHAHAH loooosers");
+        //sprintf(msg," beginning of the function");
+         //file_logG("./logs/prova.txt", msg);
 
          for(int i = 0; i < height; i++){
           for(int j = 0; j < width; j++){
-             if(ptr[i+j*height].blue == pixel.blue && first == 0){
-              first = j;
+             if(ptr[j+width*i].green == pixel.green && first == 0){
+              first = j-1;
+           //   sprintf(msg,"first %d", first);
+             // file_logG("./logs/prova.txt", msg);
              }
-             if(ptr[i+j*height].blue != pixel.blue && first != 0){
-              last = j-1;
+             if(ptr[j+width*i].green != pixel.green && first != 0){
+              last = j;
+              //sprintf(msg,"last %d", last);
+              //file_logG("./logs/prova.txt", msg);
               break;
              }
       }
 
       if(last - first == 2*radius){
-                center.x = (last-first)/2; // cx
+                center.x = first+radius; // cx
                 center.y = i; // cy
 
-                sprintf(msg," AHAHAHAH first %d last %d", first, last);
-                sprintf(msg," AHAHAHAH cx %d cy %d", center.x,center.y);
-                file_logG("./logs/prova.txt", msg);
+                //sprintf(msg,"first %d last %d", first, last);
+                //sprintf(msg,"cx %d cy %d", center.x,center.y);
+                //file_logG("./logs/prova.txt", msg);
 
                 break;
             }
       first = 0;
       last = 0;
     }
-
 
     circle_draw(center.x,center.y,bmp);
 

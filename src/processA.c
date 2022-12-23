@@ -5,13 +5,23 @@
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <semaphore.h>
 #include "./../include/processA_utilities.h"
 #include "./../include/circle_utilities.h"
 #define NAME "out/snap"
+#define SEM_PATH_WRITER "/sem_AOS_writer"
+#define SEM_PATH_READER "/sem_AOS_reader"
 
 // Free resources before termination
 // bmp_destroy(bmp);
 // TO BE HANDLED IF A SIGNAL ARRIVES (CLOSE OF THE PROGRAM)
+
+/*
+    sem_close(sem_id_reader);
+    sem_close(sem_id_writer);
+    sem_unlink(SEM_PATH_READER);
+    sem_unlink(SEM_PATH_WRITER);
+*/
 
 
 
@@ -22,6 +32,9 @@ int main(int argc, char *argv[])
     const int SIZE = width*height*sizeof(rgb_pixel_t);
     int shm_fd;
     rgb_pixel_t* ptr;
+    sem_t *sem_id_writer;
+    sem_t *sem_id_reader;
+
     shm_fd = shm_open(shm_name, O_CREAT | O_RDWR, 0666);
     if (shm_fd == 1) {
         printf("Shared memory segment failed\n");
@@ -35,6 +48,21 @@ int main(int argc, char *argv[])
         printf("Map failed\n");
         return 1;
     }
+
+    sem_id_writer = sem_open(SEM_PATH_WRITER, O_CREAT, 0644, 1);
+    if(sem_id_writer== (void*)-1){
+        perror("sem_open failure");
+        exit(1);
+    }
+
+    sem_id_reader = sem_open(SEM_PATH_READER, O_CREAT, 0644, 1);
+    if(sem_id_reader== (void*)-1){
+        perror("sem_open failure");
+        exit(1);
+    }
+
+    sem_init(sem_id_writer, 1, 1);
+    sem_init(sem_id_reader, 1, 0);
 
     // DA GESTIRE IN VERSIONE FINALE, QUANDO PROGRAMMA CHIUDE
     //munmap(ptr, SIZE);
@@ -60,8 +88,11 @@ int main(int argc, char *argv[])
     bmp = bmp_create(width, height, depth);
 
     circle_draw(cx,cy,bmp);
-    bmp_save(bmp, NAME);
+    //sem_wait(sem_id_writer);
     circle_drawAOS(bmp, ptr); 
+    //sem_post(sem_id_reader);
+
+    
 
     // Infinite loop
     while (TRUE)
@@ -102,11 +133,13 @@ int main(int argc, char *argv[])
             move_circle(cmd);
             draw_circle();
             delete(cx,cy,bmp);
+            sem_wait(sem_id_writer);
             deleteAOS(ptr);
             cx = circle.x*20;
             cy = circle.y*20;
             circle_draw(cx,cy,bmp);
             circle_drawAOS(bmp,ptr);
+            sem_post(sem_id_reader);
         }
     }
     
