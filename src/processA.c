@@ -19,8 +19,6 @@
 
 // Data structure for storing the bitmap file
 bmpfile_t *bmp;
-// file descriptor for the shared memory
-int shm_fd;
 // Size of the bitmap
 int SIZE;
 // Pointer to the mapped memory
@@ -36,8 +34,8 @@ void sig_handler(int signo){ // termination signals
     bmp_destroy(bmp);
     // unmapping of the memory segment
     munmap(ptr, SIZE);
-    // close file descriptor
-    close(shm_fd);
+    // unlinking of the shared memory
+    shm_unlink(SHM_PATH);
     // close and unlink semaphores
     sem_close(sem_id_reader);
     sem_close(sem_id_writer);
@@ -50,11 +48,13 @@ void sig_handler(int signo){ // termination signals
 
 int main(int argc, char *argv[])
 {
+    file_logG(my_log,"Program started...");
     // setup to receive SIGINT and SIGTERM
     signal(SIGINT, sig_handler);
     signal(SIGTERM, sig_handler);
-   
 
+    // file descriptor for the shared memory
+    int shm_fd;
     // instantiation of the shared memory
 
     // opening of the shared memory and check for errors
@@ -72,6 +72,9 @@ int main(int argc, char *argv[])
     if (ptr == MAP_FAILED) {
         file_logE(my_log, "Map failed");
     }
+
+    // close file descriptor
+    close(shm_fd);
 
     // opening of the writer semaphore
     sem_id_writer = sem_open(SEM_PATH_WRITER, O_CREAT, 0644, 1);

@@ -2,8 +2,8 @@
 Base repository for the **second ARP assignment**.
 The project provides you with a base infrastructure for the implementation of the simulated vision system through shared memory, according to the requirements specified in the PDF file of the assignment.
 
-## DA AGGIUNGERE AL COMMENTO FINALE
-la migliore dimensione per la gestione dei bordi delle bitmap, per le ncurses window è di 88x30
+## To be added to the final comment
+88x28 (processA), 80x28 (processB) is the best size for the ncurses windows
 
 The two processes involved in the simulation of the vision system, namely **processA** and **processB**, are implemented as simple *ncurses windows*. The development of the inter-process communication pipeline, that is the shared memory, is left to you.
 

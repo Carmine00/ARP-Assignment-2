@@ -61,6 +61,8 @@ int spawn(const char * program, char * arg_list[]) {
 
 int main() {
 
+  file_logG(my_log,"Program started...");
+
   // setup to receive SIGINT
   signal(SIGINT, sig_handler);
 

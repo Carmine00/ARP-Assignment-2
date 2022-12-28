@@ -1,36 +1,4 @@
-Received signal 2, 23/12/2022 18:53:48
-Received signal 2, 23/12/2022 18:54:04
-Received signal 2, 23/12/2022 18:54:32
-Map failed:Bad file descriptor (9), 23/12/2022 18:54:37
-Received signal 2, 23/12/2022 18:54:55
-Received signal 2, 23/12/2022 18:55:04
-Map failed:Bad file descriptor (9), 23/12/2022 18:55:09
-Received signal 2, 23/12/2022 18:57:25
-Received signal 2, 23/12/2022 18:58:06
-Map failed:Bad file descriptor (9), 23/12/2022 18:58:10
-Received signal 2, 23/12/2022 18:58:31
-Map failed:Bad file descriptor (9), 23/12/2022 18:58:35
-Received signal 2, 23/12/2022 18:58:49
-Map failed:Bad file descriptor (9), 23/12/2022 18:58:53
-Received signal 2, 23/12/2022 19:01:31
-Received signal 2, 23/12/2022 19:01:46
-Received signal 2, 23/12/2022 19:02:10
-Map failed:Bad file descriptor (9), 23/12/2022 19:02:16
-Received signal 2, 23/12/2022 19:04:51
-Map failed:Bad file descriptor (9), 23/12/2022 19:05:02
-Received signal 2, 23/12/2022 19:18:03
-Map failed:Bad file descriptor (9), 23/12/2022 19:23:15
-Received signal 2, 23/12/2022 19:23:37
-Map failed:Bad file descriptor (9), 23/12/2022 19:23:45
-Received signal 2, 23/12/2022 19:24:34
-Map failed:Bad file descriptor (9), 23/12/2022 19:29:25
-Received signal 2, 23/12/2022 19:29:37
-Received signal 2, 23/12/2022 19:29:50
-Received signal 2, 23/12/2022 19:30:01
-Map failed:Bad file descriptor (9), 23/12/2022 19:30:06
-Received signal 2, 23/12/2022 19:31:29
-Map failed:Bad file descriptor (9), 23/12/2022 19:31:37
-Received signal 2, 23/12/2022 19:43:43
-Map failed:Bad file descriptor (9), 23/12/2022 19:43:45
-Received signal 2, 23/12/2022 19:44:14
-Map failed:Bad file descriptor (9), 23/12/2022 19:44:16
+Program started..., 29/12/2022 00:05:12
+Received signal 15, 29/12/2022 00:05:41
+Program started..., 29/12/2022 00:05:44
+Received signal 2, 29/12/2022 00:05:52

@@ -89,7 +89,7 @@ void deleteAOS(rgb_pixel_t *ptr){
 }
 
 // function to find the center of the shared memory
-coordinate find_center(bmpfile_t *bmp, rgb_pixel_t *ptr){
+coordinate find_center(rgb_pixel_t *ptr){
   
         int first = 0, last = 0;
 
@@ -115,9 +115,6 @@ coordinate find_center(bmpfile_t *bmp, rgb_pixel_t *ptr){
       first = 0;
       last = 0;
     }
-
-    // once the new center has been retrieved, draw circle in the bitmap of process B
-    circle_draw(center.x,center.y,bmp);
 
     return center;
 

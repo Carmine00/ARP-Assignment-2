@@ -16,8 +16,10 @@
 
 // Data structure for storing the bitmap file
 bmpfile_t *bmp;
-// file descriptor for the shared memory
-int shm_fd;
+// Pointer to the mapped memory
+rgb_pixel_t* ptr;
+// Size of the bitmap
+int SIZE;
 // Pointers for the semaphores
 sem_t *sem_id_writer;
 sem_t *sem_id_reader;
@@ -29,10 +31,10 @@ void sig_handler(int signo){ // termination signals
     
     // destroy bitmap
     bmp_destroy(bmp);
+    // unmapping of the memory segment
+    munmap(ptr, SIZE);
     // unlinking of the shared memory
     shm_unlink(SHM_PATH);
-    // close file descriptor of the shared memory
-    close(shm_fd);
     // close and unlink semaphores
     sem_close(sem_id_reader);
     sem_close(sem_id_writer);
@@ -48,14 +50,17 @@ void sig_handler(int signo){ // termination signals
 
 int main(int argc, char const *argv[])
 {
+    file_logG(my_log,"Program started...");
+    
     // setup to receive SIGINT and SIGTERM
     signal(SIGINT, sig_handler);
     signal(SIGTERM, sig_handler);
 
+    // file descriptor for the shared memory
+    int shm_fd;
+
     // instantiation of the shared memory
-    const int SIZE = width*height*sizeof(rgb_pixel_t);
-    // Pointer to the mapped memory
-    rgb_pixel_t * ptr;
+    SIZE = width*height*sizeof(rgb_pixel_t);
 
     // opening of the shared memory and check for errors
     shm_fd = shm_open(SHM_PATH, O_RDONLY, 0666);
@@ -68,6 +73,9 @@ int main(int argc, char const *argv[])
     if (ptr == MAP_FAILED) {
         file_logE(my_log, "Map failed");
     }
+
+    // close file descriptor of the shared memory
+    close(shm_fd);
 
 
     // Utility variable to avoid trigger resize event on launch
@@ -119,7 +127,9 @@ int main(int argc, char const *argv[])
         else {
             // take the semaphore and find new center in the shared memory and save it in the vector center
             sem_wait(sem_id_reader);
-            center[counter] = find_center(bmp, ptr);
+            center[counter] = find_center(ptr);
+            // once the new center has been retrieved, draw circle in the bitmap of process B
+            circle_draw(center[counter].x,center[counter].y,bmp);
             sem_post(sem_id_writer);
             // compute new coordinates of the center
             cx = center[counter].x/20;
