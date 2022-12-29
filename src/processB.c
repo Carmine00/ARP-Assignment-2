@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <semaphore.h>
+#include <sys/wait.h>
 #include <signal.h>
 #include "./../include/processB_utilities.h"
 #include "./../include/circle_utilities.h"
@@ -61,6 +62,8 @@ int main(int argc, char const *argv[])
 
     // instantiation of the shared memory
     SIZE = width*height*sizeof(rgb_pixel_t);
+
+    sleep(1); // sleep time set to allow processA to create the shared memory
 
     // opening of the shared memory and check for errors
     shm_fd = shm_open(SHM_PATH, O_RDONLY, 0666);

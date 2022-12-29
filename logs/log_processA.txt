@@ -1,0 +1,5 @@
+Program started..., 29/12/2022 22:28:03
+Received signal 2, 29/12/2022 22:28:10
+Program started..., 29/12/2022 22:28:14
+Received signal 2, 29/12/2022 22:28:33
+Program started..., 29/12/2022 22:28:35
