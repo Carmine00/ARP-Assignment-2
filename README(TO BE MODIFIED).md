@@ -2,6 +2,30 @@
 Base repository for the **second ARP assignment**.
 The project provides you with a base infrastructure for the implementation of the simulated vision system through shared memory, according to the requirements specified in the PDF file of the assignment.
 
+### MASTER 
+The assignment consists of master and two children processes. Master has two childern processes which are called **process A** and **process B**. Also, it has a signal handler in order to stop the processes using ctrl+c command. 
+
+
+### PROCESS A
+**Process A** takes the command from keyboard and draws a blue circle to the bitmap regarding to the location of the cursor at the ncurses window. Cursor location is the center of the circle which is drawn by this process and the circle location changes when the cursor location changed. Whenever the print button is pressed the bitmap is updated so the circle location is updated.
+It uses shared memory in order to share the location information of the blue circle with the other process. Also, it contains semaphore structure in order to prevent the situation of reading and writing from the shared memory at the same time. So, it blocks the request until the other process finish to perform. In this case, process A waits the process B to read from shared memory. Then, it starts to write. 
+
+In order to draw the circle, **circle_draw()** command is used. First, the previous circle is deleted then it takes x and y coordinates after the mapping (multiplying by 20), and it draws it to the bitmap. Finally, the same circle is drawn to the shared memory using **circle_drawAOS()** function in order to inform the other process about the new location of the blue circle.
+
+
+### PROCESS B
+The aim of the **process B** is that checking the pixels which are blue in the shared memory. Then, it finds the center of the circle by checking first and last blue pixels at each row and stops when it reaches the diameter of the circle which is constant and equal to 60. After it found the center, sends the center location to the function called **circle_draw()** in order to draw this circle to the bitmap. The circle is deleted when the new circle is in the shared memory. 
+One of the other thing that process B does is, it draws the track that user has done so changing of the center of the circle can be tracked. In order to provide this feature, dynamic memory is used. At the beginning of the code, it allocates its memory has dimension of 10 with the center of the circle. After the 10. keyboard command it reallocs its memory and continues to keep tracking. 
+
+In order to understand if the processes work properly, bitmap files of each process is compared and it can be seen that both circles are located on the same place.
+
+### SIGNALS
+In order to quit and stop the processes both **SIGINT** and **SIGTERM** are used. When a signal come to a process, it destroys bitmap, unmaps the memory segment, unlinks the shared memory and then closes and unlinks the semaphore also a message is written to the log file in order to inform user. 
+
+
+
+
+
 ## To be added to the final comment
 88x28 (processA), 80x28 (processB) is the best size for the ncurses windows
 
