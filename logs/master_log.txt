@@ -1,5 +1,0 @@
-Program started..., 29/12/2022 00:05:11
-sent SIGTERM to processA, 29/12/2022 00:05:41
-sent SIGTERM to processB, 29/12/2022 00:05:41
-Received signal 2, 29/12/2022 00:05:41
-Program started..., 29/12/2022 00:05:43
